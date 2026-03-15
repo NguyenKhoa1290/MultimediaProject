@@ -22,13 +22,17 @@ const VideoButton = ({smallFeedEl})=>{
     useEffect(()=>{
         const getDevicesAsync = async()=>{
             if(caretOpen){
-                //then we need to check for video devices
                 const devices = await getDevices();
-                console.log(devices.videoDevices)
                 setVideoDeviceList(devices.videoDevices)
             }
         }
         getDevicesAsync()
+
+        // Lắng nghe sự kiện cắm/rút thiết bị từ trình duyệt
+        navigator.mediaDevices.addEventListener('devicechange', getDevicesAsync);
+        return () => {
+            navigator.mediaDevices.removeEventListener('devicechange', getDevicesAsync);
+        }
     },[caretOpen])
 
     const changeVideoDevice = async(e)=>{

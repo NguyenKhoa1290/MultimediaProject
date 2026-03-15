@@ -84,6 +84,11 @@ io.on('connection', socket => {
         socket.to(roomName).emit('iceToClient', { iceC, who });
     });
 
+    // Khi người dùng bấm nút Hang Up
+    socket.on('endCall', ({ roomName }) => {
+        socket.to(roomName).emit('callEnded');
+    });
+
     // Khi người dùng ngắt kết nối (tắt tab, mất mạng...)
     socket.on('disconnecting', () => {
         // socket.rooms là một Set chứa các room mà socket đang tham gia

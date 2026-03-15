@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import createPeerConnection from "../webRTCutilities/createPeerConnection";
 import socketConnection from '../webRTCutilities/socketConnection';
 import updateCallStatus from "../redux-elements/actions/updateCallStatus";
+import HeadsetPopup from "./HeadsetPopup";
 
 const MeetingPage = () => {
     const dispatch = useDispatch();
@@ -26,10 +27,34 @@ const MeetingPage = () => {
     const streamsRef = useRef(null);
     const socketRef = useRef(null);
     const iceQueueRef = useRef([]);
+    const peerLeftTimeout = useRef(null);
 
     const roomName = searchParams.get('room');
     const isInitiator = searchParams.get('isInitiator') === 'true';
     const myUsername = localStorage.getItem('username');
+
+    // Hàm tiện ích để đóng cuộc gọi và đóng tab
+    const handleCloseTab = () => {
+        alert("Cuộc gọi kết thúc");
+        if (streamsRef.current) {
+            for (const s in streamsRef.current) {
+                if (streamsRef.current[s].peerConnection) {
+                    streamsRef.current[s].peerConnection.close();
+                }
+                if (streamsRef.current[s].stream) {
+                    streamsRef.current[s].stream.getTracks().forEach(track => track.stop());
+                }
+            }
+        }
+        try {
+            window.close();
+        } catch(e) {
+            console.log(e);
+        }
+        setTimeout(() => {
+            window.location.href = '/dashboard';
+        }, 500);
+    };
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -52,8 +77,19 @@ const MeetingPage = () => {
         fetchUsers();
 
         socket.on('peerJoined', () => {
-            console.log("Peer has joined the room");
+            console.log("Peer has joined/reconnected");
             setPeerJoined(true);
+            
+            // Xóa timeout nếu người dùng kịp reload lại
+            if (peerLeftTimeout.current) {
+                clearTimeout(peerLeftTimeout.current);
+                peerLeftTimeout.current = null;
+            }
+
+            // Nếu là người khởi tạo, reset trạng thái để gửi Offer mới cho người vừa quay lại
+            if (isInitiator) {
+                dispatch(updateCallStatus('haveCreatedOffer', false));
+            }
         });
 
         socket.on('onlineUsersUpdate', (onlineList) => {
@@ -62,6 +98,8 @@ const MeetingPage = () => {
 
         socket.on('newOfferWaiting', (offer) => {
             if (!isInitiator) {
+                // Reset trạng thái Answer cũ để nhận Offer mới khi re-connect
+                dispatch(updateCallStatus('haveCreatedAnswer', false));
                 dispatch(updateCallStatus('offer', offer));
             }
         });
@@ -85,32 +123,37 @@ const MeetingPage = () => {
             }
         });
 
-        // Xử lý khi người kia tắt tab hoặc thoát
+        // Xử lý khi người kia chủ động bấm nút Hang Up
+        socket.on('callEnded', () => {
+            handleCloseTab();
+        });
+
+        // Xử lý khi người kia reload hoặc mất mạng tạm thời hoặc đóng tab (X)
         socket.on('peerLeft', () => {
-            alert("Người dùng kia đã thoát khỏi cuộc gọi.");
-            
-            // Dọn dẹp thiết bị (Tắt cam/mic)
-            if (streamsRef.current) {
-                for (const s in streamsRef.current) {
-                    if (streamsRef.current[s].peerConnection) {
-                        streamsRef.current[s].peerConnection.close();
-                    }
-                    if (streamsRef.current[s].stream) {
-                        streamsRef.current[s].stream.getTracks().forEach(track => track.stop());
-                    }
-                }
+            console.log("Peer disconnected, waiting for reconnection...");
+            setPeerJoined(false);
+            // Reset các queue và trạng thái để sẵn sàng kết nối lại
+            iceQueueRef.current = [];
+            if (!isInitiator) {
+                dispatch(updateCallStatus('haveCreatedAnswer', false));
+            } else {
+                dispatch(updateCallStatus('haveCreatedOffer', false));
             }
-            
-            // Chuyển hướng về trang chủ và tải lại bộ nhớ
-            window.location.href = '/dashboard';
+
+            // Đặt thời gian chờ 5 giây. Nếu quá 5 giây mà peerJoined không được kích hoạt (không phải là reload) -> Đóng tab
+            peerLeftTimeout.current = setTimeout(() => {
+                handleCloseTab();
+            }, 5000);
         });
 
         return () => {
+            if (peerLeftTimeout.current) clearTimeout(peerLeftTimeout.current);
             socket.off('peerJoined');
             socket.off('onlineUsersUpdate');
             socket.off('newOfferWaiting');
             socket.off('answerToClient');
             socket.off('iceToClient');
+            socket.off('callEnded');
             socket.off('peerLeft');
         };
     }, [roomName, isInitiator]);
@@ -201,10 +244,14 @@ const MeetingPage = () => {
         const createAnswer = async () => {
             if (!isInitiator && callStatus.haveMedia && callStatus.offer && !callStatus.haveCreatedAnswer && streams.remote1) {
                 const pc = streams.remote1.peerConnection;
-                const answer = await pc.createAnswer();
-                await pc.setLocalDescription(answer);
-                socketRef.current.emit('newAnswer', { answer, roomName });
-                dispatch(updateCallStatus('haveCreatedAnswer', true));
+                try {
+                    const answer = await pc.createAnswer();
+                    await pc.setLocalDescription(answer);
+                    socketRef.current.emit('newAnswer', { answer, roomName });
+                    dispatch(updateCallStatus('haveCreatedAnswer', true));
+                } catch (error) {
+                    console.log(error);
+                }
             }
         };
         createAnswer();
@@ -273,6 +320,11 @@ const MeetingPage = () => {
                 smallFeedEl={smallFeedEl} 
                 largeFeedEl={largeFeedEl} 
                 toggleParticipants={() => setShowParticipants(!showParticipants)}
+                endCallProp={() => {
+                    if (socketRef.current) {
+                        socketRef.current.emit('endCall', { roomName });
+                    }
+                }}
             />
         </div>
     );

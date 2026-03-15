@@ -26,13 +26,17 @@ const AudioButton = ({smallFeedEl})=>{
     useEffect(()=>{
         const getDevicesAsync = async()=>{
             if(caretOpen){
-                //then we need to check for audio devices
                 const devices = await getDevices();
-                console.log(devices.videoDevices)
                 setAudioDeviceList(devices.audioOutputDevices.concat(devices.audioInputDevices))
             }
         }
         getDevicesAsync()
+
+        // Lắng nghe sự kiện cắm/rút thiết bị từ trình duyệt
+        navigator.mediaDevices.addEventListener('devicechange', getDevicesAsync);
+        return () => {
+            navigator.mediaDevices.removeEventListener('devicechange', getDevicesAsync);
+        }
     },[caretOpen])
 
     const startStopAudio = ()=>{

@@ -4,17 +4,17 @@ const ActionButtonCaretDropDown = ({defaultValue,changeHandler,deviceList,type})
     let dropDownEl;
     if(type==="video"){
         const videoDeviceEl = deviceList.map(vd=><option key={vd.deviceId} value={vd.deviceId}>{vd.label}</option>)
-        videoDeviceEl.unshift(<optgroup label="Thiết bị Camera" />)
+        videoDeviceEl.unshift(<optgroup key="opt-camera" label="Thiết bị Camera" />)
         
         const qualityEl = [
-            <optgroup label="Độ phân giải" />,
-            <option value="res480">480p (SD)</option>,
-            <option value="res720">720p (HD)</option>,
-            <option value="res1080">1080p (Full HD)</option>,
-            <optgroup label="Khung hình (FPS)" />,
-            <option value="fps15">15 FPS</option>,
-            <option value="fps30">30 FPS</option>,
-            <option value="fps60">60 FPS</option>
+            <optgroup key="opt-res" label="Độ phân giải" />,
+            <option key="res480" value="res480">480p (SD)</option>,
+            <option key="res720" value="res720">720p (HD)</option>,
+            <option key="res1080" value="res1080">1080p (Full HD)</option>,
+            <optgroup key="opt-fps" label="Khung hình (FPS)" />,
+            <option key="fps15" value="fps15">15 FPS</option>,
+            <option key="fps30" value="fps30">30 FPS</option>,
+            <option key="fps60" value="fps60">60 FPS</option>
         ]
         dropDownEl = videoDeviceEl.concat(qualityEl)
     }else if(type === "audio"){
@@ -27,8 +27,8 @@ const ActionButtonCaretDropDown = ({defaultValue,changeHandler,deviceList,type})
                 audioOutputEl.push(<option key={`ouput${d.deviceId}`} value={`ouput${d.deviceId}`}>{d.label}</option>)
             }
         })
-        audioInputEl.unshift(<optgroup label="Thiết bị ghi âm" />)
-        audioOutputEl.unshift(<optgroup label="Loa" />)
+        audioInputEl.unshift(<optgroup key="opt-mic" label="Thiết bị ghi âm" />)
+        audioOutputEl.unshift(<optgroup key="opt-speaker" label="Loa" />)
         dropDownEl = audioInputEl.concat(audioOutputEl)
     }
     

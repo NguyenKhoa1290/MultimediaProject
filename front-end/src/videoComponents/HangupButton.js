@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux"
 import updateCallStatus from "../redux-elements/actions/updateCallStatus"
 
-const HangupButton = ({largeFeedEl, smallFeedEl})=>{
+const HangupButton = ({largeFeedEl, smallFeedEl, endCallProp})=>{
 
     const dispatch = useDispatch()
     const callStatus = useSelector(state=>state.callStatus)
@@ -9,11 +9,13 @@ const HangupButton = ({largeFeedEl, smallFeedEl})=>{
 
     const hangupCall = ()=>{
         dispatch(updateCallStatus('current','complete'))
+        
+        if (endCallProp) {
+            endCallProp();
+        }
+
         //user has clicked hang up
         for(const s in streams){
-            //loop through all streams, and if there is a pc, close it
-            //remove listeners
-            //set it to null
             if(streams[s].peerConnection){
                 streams[s].peerConnection.close();
                 streams[s].peerConnection.onicecandidate = null
@@ -29,8 +31,18 @@ const HangupButton = ({largeFeedEl, smallFeedEl})=>{
         if (smallFeedEl.current) smallFeedEl.current.srcObject = null;
         if (largeFeedEl.current) largeFeedEl.current.srcObject = null;
 
-        // Chuyển hướng về trang chủ và tải lại trang để dọn dẹp bộ nhớ (Redux/WebRTC)
-        window.location.href = '/dashboard';
+        alert("Cuộc gọi kết thúc");
+        
+        // Cố gắng đóng tab. Nếu trình duyệt chặn (do không phải script mở tab), sẽ fallback về trang chủ
+        try {
+            window.close();
+        } catch(e) {
+            console.log(e);
+        }
+        // Fallback
+        setTimeout(() => {
+            window.location.href = '/dashboard';
+        }, 500);
     }
 
     if(callStatus.current === "complete"){

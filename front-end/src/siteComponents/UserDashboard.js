@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import socketConnection from '../webRTCutilities/socketConnection';
+import BottomTaskbar from './BottomTaskbar';
 
 const UserDashboard = () => {
     const [activeTab, setActiveTab] = useState('main'); // 'main', 'history', 'profile'
@@ -342,33 +343,15 @@ const UserDashboard = () => {
     );
 
     return (
-        <div>
-            {/* Thanh Taskbar (Navigation) */}
-            <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-                <div className="container-fluid">
-                    <span className="navbar-brand">TeleLegal</span>
-                    <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                        <span className="navbar-toggler-icon"></span>
-                    </button>
-                    <div className="collapse navbar-collapse" id="navbarNav">
-                        <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-                            <li className="nav-item">
-                                <button className={`nav-link btn btn-link ${activeTab === 'main' ? 'active' : ''}`} onClick={() => setActiveTab('main')}>Trang chính</button>
-                            </li>
-                            <li className="nav-item">
-                                <button className={`nav-link btn btn-link ${activeTab === 'history' ? 'active' : ''}`} onClick={() => { setActiveTab('history'); fetchCallHistory(); }}>Lịch sử</button>
-                            </li>
-                            <li className="nav-item">
-                                <button className={`nav-link btn btn-link ${activeTab === 'profile' ? 'active' : ''}`} onClick={() => setActiveTab('profile')}>Cá nhân</button>
-                            </li>
-                        </ul>
-                        <div className="navbar-text text-white d-flex align-items-center">
-                            <AvatarDisplay src={myAvatar} alt={myFullName} size={30} />
-                            <span>Chào, {myFullName}</span>
-                        </div>
-                    </div>
+        <div style={{ paddingBottom: '100px' }}>
+            {/* Top Header */}
+            <div className="d-flex justify-content-between align-items-center bg-dark text-white p-3 mb-4 shadow-sm">
+                <h3 className="m-0 text-primary">TeleLegal</h3>
+                <div className="d-flex align-items-center">
+                    <AvatarDisplay src={myAvatar} alt={myFullName} size={35} />
+                    <span className="fw-bold">{myFullName}</span>
                 </div>
-            </nav>
+            </div>
 
             <div className="container mt-4">
                 {/* Pop-up Lời mời gọi video */}
@@ -398,6 +381,9 @@ const UserDashboard = () => {
                 {activeTab === 'history' && renderHistoryTab()}
                 {activeTab === 'profile' && renderProfileTab()}
             </div>
+
+            {/* Bottom Taskbar */}
+            <BottomTaskbar activeTab={activeTab} setActiveTab={setActiveTab} />
         </div>
     );
 };
