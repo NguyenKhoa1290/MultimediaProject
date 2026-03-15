@@ -84,6 +84,19 @@ io.on('connection', socket => {
         socket.to(roomName).emit('iceToClient', { iceC, who });
     });
 
+    // Khi người dùng ngắt kết nối (tắt tab, mất mạng...)
+    socket.on('disconnecting', () => {
+        // socket.rooms là một Set chứa các room mà socket đang tham gia
+        // Bao gồm cả room mặc định là chính socket.id của nó
+        for (const room of socket.rooms) {
+            if (room !== socket.id) {
+                // Nếu đây là phòng họp (room), báo cho người còn lại biết
+                socket.to(room).emit('peerLeft');
+                console.log(`Socket ${socket.id} left room ${room}`);
+            }
+        }
+    });
+
     socket.on('disconnect', () => {
         for (const username in onlineUsers) {
             if (onlineUsers[username] === socket.id) {

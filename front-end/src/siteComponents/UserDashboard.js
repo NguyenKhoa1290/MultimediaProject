@@ -168,16 +168,17 @@ const UserDashboard = () => {
 
     const createMeeting = () => {
         const roomName = `room-${myPhone}-${Date.now()}`;
-        navigate(`/meeting?room=${roomName}&isInitiator=true`);
+        window.open(`/meeting?room=${roomName}&isInitiator=true`, '_blank');
     };
 
     const callFriend = (friendPhone) => {
         const roomName = `room-${myPhone}-${Date.now()}`;
-        navigate(`/meeting?room=${roomName}&isInitiator=true&invite=${friendPhone}`);
+        window.open(`/meeting?room=${roomName}&isInitiator=true&invite=${friendPhone}`, '_blank');
     };
 
     const joinMeeting = () => {
-        navigate(`/meeting?room=${invitation.roomName}&isInitiator=false`);
+        window.open(`/meeting?room=${invitation.roomName}&isInitiator=false`, '_blank');
+        setInvitation(null); // Đóng pop-up ở tab hiện tại sau khi bấm nhận
     };
 
     const declineMeeting = () => {

@@ -85,12 +85,33 @@ const MeetingPage = () => {
             }
         });
 
+        // Xử lý khi người kia tắt tab hoặc thoát
+        socket.on('peerLeft', () => {
+            alert("Người dùng kia đã thoát khỏi cuộc gọi.");
+            
+            // Dọn dẹp thiết bị (Tắt cam/mic)
+            if (streamsRef.current) {
+                for (const s in streamsRef.current) {
+                    if (streamsRef.current[s].peerConnection) {
+                        streamsRef.current[s].peerConnection.close();
+                    }
+                    if (streamsRef.current[s].stream) {
+                        streamsRef.current[s].stream.getTracks().forEach(track => track.stop());
+                    }
+                }
+            }
+            
+            // Chuyển hướng về trang chủ và tải lại bộ nhớ
+            window.location.href = '/dashboard';
+        });
+
         return () => {
             socket.off('peerJoined');
             socket.off('onlineUsersUpdate');
             socket.off('newOfferWaiting');
             socket.off('answerToClient');
             socket.off('iceToClient');
+            socket.off('peerLeft');
         };
     }, [roomName, isInitiator]);
 
