@@ -89,6 +89,11 @@ io.on('connection', socket => {
         socket.to(roomName).emit('callEnded');
     });
 
+    // Chat trong phòng
+    socket.on('chatToServer', ({ message, fromFullName, roomName }) => {
+        socket.to(roomName).emit('chatToClient', { message, fromFullName });
+    });
+
     // Khi người dùng ngắt kết nối (tắt tab, mất mạng...)
     socket.on('disconnecting', () => {
         // socket.rooms là một Set chứa các room mà socket đang tham gia

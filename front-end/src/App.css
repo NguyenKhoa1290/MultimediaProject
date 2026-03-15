@@ -1,3 +1,9 @@
+html {
+  /* Luôn giữ chỗ cho thanh cuộn để tránh nhảy giao diện */
+  scrollbar-gutter: stable;
+  overflow-y: scroll;
+}
+
 .App {
   text-align: center;
 }

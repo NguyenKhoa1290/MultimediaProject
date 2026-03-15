@@ -9,6 +9,7 @@ import createPeerConnection from "../webRTCutilities/createPeerConnection";
 import socketConnection from '../webRTCutilities/socketConnection';
 import updateCallStatus from "../redux-elements/actions/updateCallStatus";
 import HeadsetPopup from "./HeadsetPopup";
+import ChatWindow from "./ChatWindow";
 
 const MeetingPage = () => {
     const dispatch = useDispatch();
@@ -20,6 +21,7 @@ const MeetingPage = () => {
     const [users, setUsers] = useState([]);
     const [onlineUsernames, setOnlineUsernames] = useState([]);
     const [showParticipants, setShowParticipants] = useState(false);
+    const [showChat, setShowChat] = useState(false);
     const [peerJoined, setPeerJoined] = useState(false);
     
     const smallFeedEl = useRef(null);
@@ -32,6 +34,7 @@ const MeetingPage = () => {
     const roomName = searchParams.get('room');
     const isInitiator = searchParams.get('isInitiator') === 'true';
     const myUsername = localStorage.getItem('username');
+    const myFullName = localStorage.getItem('fullName');
 
     // Hàm tiện ích để đóng cuộc gọi và đóng tab
     const handleCloseTab = () => {
@@ -275,6 +278,16 @@ const MeetingPage = () => {
         }
     }, [callStatus.answer, streams.remote1, isInitiator]);
 
+    const toggleParticipants = () => {
+        setShowChat(false); 
+        setShowParticipants(!showParticipants);
+    };
+
+    const toggleChat = () => {
+        setShowParticipants(false);
+        setShowChat(!showChat);
+    };
+
     const inviteUser = (toUsername) => {
         socketRef.current.emit('inviteUser', { toUsername, fromUsername: myUsername, roomName });
         alert(`Đã gửi lời mời tới ${toUsername}`);
@@ -285,8 +298,8 @@ const MeetingPage = () => {
     return (
         <div className="main-video-page">
             <div className="video-chat-wrapper">
-                <video id="large-feed" ref={largeFeedEl} autoPlay controls playsInline></video>
-                <video id="own-feed" ref={smallFeedEl} autoPlay controls playsInline></video>
+                <video id="large-feed" ref={largeFeedEl} autoPlay playsInline></video>
+                <video id="own-feed" ref={smallFeedEl} autoPlay playsInline></video>
                 
                 <div className={`participants-window ${showParticipants ? 'show' : ''}`}>
                     <h4>Người tham gia</h4>
@@ -314,12 +327,22 @@ const MeetingPage = () => {
                         ))}
                     </ul>
                 </div>
+
+                <ChatWindow 
+                    show={showChat} 
+                    socket={socketRef.current} 
+                    roomName={roomName} 
+                    myFullName={myFullName}
+                />
             </div>
+            
+            <HeadsetPopup smallFeedEl={smallFeedEl} />
             
             <ActionButtons 
                 smallFeedEl={smallFeedEl} 
                 largeFeedEl={largeFeedEl} 
-                toggleParticipants={() => setShowParticipants(!showParticipants)}
+                toggleParticipants={toggleParticipants}
+                openCloseChat={toggleChat}
                 endCallProp={() => {
                     if (socketRef.current) {
                         socketRef.current.emit('endCall', { roomName });

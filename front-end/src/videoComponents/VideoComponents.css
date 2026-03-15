@@ -3,10 +3,25 @@
   padding: 0;
 }
 
+.main-video-page {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden !important; /* Ẩn thanh cuộn */
+    background-color: black;
+}
+
+.video-chat-wrapper {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
 #large-feed{
   background-color: black;
   height: 100vh;
   width: 100vw;
+  object-fit: cover; /* Đảm bảo video lấp đầy màn hình */
 }
 
 #own-feed{
@@ -23,120 +38,155 @@
    transform: scaleX(1);
 }
 
-#menu-buttons{
-  height: 80px;
-  width: 100%;
-  background-color: #333;
-  position: absolute;
-  bottom: -6px;
-  left: 11px;
+#menu-buttons {
+  height: 85px;
+  width: auto;
+  min-width: fit-content;
+  background-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(15px) saturate(180%);
+  -webkit-backdrop-filter: blur(15px) saturate(180%);
+  position: fixed; /* Đổi thành fixed để ổn định vị trí */
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 99em;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px;
+  z-index: 1000;
+  gap: 5px; /* Khoảng cách giữa các nút */
 }
 
-#menu-buttons .fa{
-  font-size: 24px;
+/* Gỡ bỏ các style liên quan đến row/col của Bootstrap bên trong toolbar */
+#menu-buttons .left, 
+#menu-buttons .text-center, 
+#menu-buttons .text-end {
+    display: flex;
+    align-items: center;
+    width: auto;
+    flex: none;
 }
 
-.hidden{
-  display: none;
-}
-
-.button-no-caret, .button-wrapper, .button{
-  width: 100px;
-  height: 80px;
+.button-no-caret, .button-wrapper, .button {
+  width: 85px;
+  height: 70px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   position: relative;
+  background: transparent !important;
+  transition: all 0.2s;
 }
 
+.button-no-caret:hover, .button:hover {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  border-radius: 20px;
+}
 
+.button-no-caret i, .button-wrapper i, .button i {
+  font-size: 22px !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  position: static !important;
+  margin-bottom: 4px;
+}
 
-.button-no-caret:hover, .button:hover{
-  position: relative;
-  background-color: #555;
+.btn-text {
+  position: static !important;
+  font-size: 10px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  white-space: nowrap;
+}
+
+.button-wrapper i.fa-caret-up {
+  position: absolute !important;
+  top: 5px !important;
+  left: 50% !important;
+  transform: translateX(-50%);
+  font-size: 12px !important;
+  padding: 0;
   cursor: pointer;
+  color: rgba(255, 255, 255, 0.5) !important;
+  z-index: 10;
 }
 
-.button-no-caret i, .button-wrapper i{
-  font-size:32px; 
-  color:#ccc;
-  position: absolute;
-  left: 35px;
+.button-wrapper i.fa-caret-up:hover {
+  color: white !important;
+}
+
+.hang-up-glass:hover {
+    background-color: rgba(255, 75, 43, 0.2) !important;
+    border-radius: 20px;
+}
+
+
+/* Giới hạn CSS chỉ trong trang Video để không làm hỏng trang Login */
+.main-video-page .chat-window {
+  position: fixed; /* Dùng fixed để luôn bám vào cạnh màn hình */
+  right: -400px; 
+  width: 350px;
+  height: calc(100vh - 150px);
   top: 20px;
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 2000; /* Nằm trên tất cả */
+  background-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 20px;
+  color: white;
 }
 
-.button-wrapper i.fa-caret-up{
-left: 75px;
-top: 0px;
-z-index: 100000;
-padding: 5px;
+.main-video-page .chat-window.show {
+  right: 20px; /* Hiện ra cách mép phải 20px */
 }
 
-.button-wrapper i.fa-caret-up:hover{
-background-color: #555;
-cursor: pointer;
-}
-
-.caret-dropdown{
-position: absolute;
-left: 100px;
-}
-
-.caret-dropdown select{
-background-color: #333;
-color: white;
-}
-
-.button .fa.fa-comment{
-  left: 40px;
-}
-
-.hang-up{
-  position: relative;
-  right: 10px;
+.main-video-page .participants-window {
+  position: fixed;
+  right: -400px;
+  width: 350px;
+  height: calc(100vh - 150px);
   top: 20px;
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 2000;
+  background-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 20px;
+  color: white;
+  overflow-y: auto;
 }
 
-.btn-text{
-  position: absolute;
-  bottom: 10px;
-  color: white;    
-  text-align: center;
-  width: 100%;
+.main-video-page .participants-window.show {
+  right: 20px;
 }
 
-
-.chat-window{
-position: absolute;
-right: -25%;
-height: 100px;
-transition: all 1s;
-z-index: 1000;
-width: 25%;
-top: 0;
-height: 100vh;
+.main-video-page .list-group-item {
+    background: transparent !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: white !important;
 }
 
-.chat-window.show{
-border: 1px solid black;
-background-color: white;
-right:0px;
+.main-video-page .bg-light {
+    background-color: rgba(255, 255, 255, 0.15) !important;
+    color: white !important;
 }
 
-/* Thêm class cho Participants giống với Chat Window */
-.participants-window {
-    position: absolute;
-    right: -25%;
-    transition: all 0.5s;
-    z-index: 1000;
-    width: 25%;
-    top: 0;
-    height: 100vh;
-    background-color: #f8f9fa;
-    border-left: 1px solid black;
-    padding: 15px;
-    overflow-y: auto;
+.main-video-page .form-control {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
 }
 
-.participants-window.show {
-    right: 0px;
+.main-video-page .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.5);
 }
 
 .video-chat-wrapper{

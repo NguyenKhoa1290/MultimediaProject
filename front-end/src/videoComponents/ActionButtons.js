@@ -40,31 +40,28 @@ const ActionButtons = ({openCloseChat,smallFeedEl, largeFeedEl, toggleParticipan
     },[])
 
     return(
-        <div id="menu-buttons" ref={menuButtons} className="row">
-            {/* <i className="fa fa-microphone" style="font-size:48px;color:red"></i> */}
-            <div className="left col-2">
+        <div id="menu-buttons" ref={menuButtons}>
+            <div className="left">
                 <AudioButton smallFeedEl={smallFeedEl}/>
                 <VideoButton smallFeedEl={smallFeedEl}/>
             </div>
 
-            <div className="col-8 text-center">
-                <div className="button-wrapper d-inline-block">
-                    <i className="fa fa-caret-up choose-video"></i>
-                    <div className="button participants" onClick={toggleParticipants}>
-                        <i className="fa fa-users"></i>
-                        <div className="btn-text">Participants</div>
-                    </div>
+            <div className="button-wrapper d-inline-block">
+                <i className="fa fa-caret-up choose-video"></i>
+                <div className="button participants" onClick={toggleParticipants}>
+                    <i className="fa fa-users"></i>
+                    <div className="btn-text">Participants</div>
                 </div>
-                <div className="button-no-caret d-inline-block">
-                    <div className="button participants">
-                        <i className="fa fa-comment" onClick={openCloseChat}></i>
-                        <div className="btn-text" onClick={openCloseChat}>Chat</div>
-                    </div>
+            </div>
+            <div className="button-no-caret d-inline-block">
+                <div className="button participants">
+                    <i className="fa fa-comment" onClick={openCloseChat}></i>
+                    <div className="btn-text" onClick={openCloseChat}>Chat</div>
                 </div>
-                <ScreenShareButton smallFeedEl={smallFeedEl} />
-            </div>  
+            </div>
+            <ScreenShareButton smallFeedEl={smallFeedEl} />
 
-            <div className="center justify-center text-end col-2">
+            <div className="center justify-center">
                 <HangupButton
                     smallFeedEl={smallFeedEl}
                     largeFeedEl={largeFeedEl}

@@ -50,10 +50,13 @@ const HangupButton = ({largeFeedEl, smallFeedEl, endCallProp})=>{
     }
 
     return(
-        <button 
+        <div 
             onClick={hangupCall} 
-            className="btn btn-danger hang-up"
-        >Hang Up</button>
+            className="button hang-up-glass"
+        >
+            <i className="fa fa-phone" style={{transform: 'rotate(135deg)', color: '#ff4b2b'}}></i>
+            <div className="btn-text">Kết thúc</div>
+        </div>
     )
 }
 
