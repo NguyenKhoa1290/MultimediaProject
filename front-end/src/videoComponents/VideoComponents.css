@@ -207,3 +207,58 @@ padding: 10px;
 .call-info h1{
 color: white;
 }
+
+/* =========================================
+   GIAO DIỆN MOBILE (RESPONSIVE)
+   ========================================= */
+@media (max-width: 768px) {
+  /* Thu nhỏ và dàn đều thanh công cụ */
+  #menu-buttons {
+    min-width: unset;
+    width: 95%;
+    height: 60px;
+    padding: 0 10px;
+    bottom: 15px;
+    justify-content: space-around;
+  }
+
+  .button-no-caret, .button-wrapper, .button {
+    width: 50px;
+    height: 50px;
+  }
+
+  /* Ẩn toàn bộ chữ bên dưới Icon */
+  .btn-text {
+    display: none !important;
+  }
+
+  /* Ẩn các mũi tên chọn thiết bị */
+  .button-wrapper i.fa-caret-up {
+    display: none !important;
+  }
+
+  /* Căn giữa lại các Icon khi không còn chữ */
+  .button-no-caret i, .button-wrapper i, .button i {
+    margin-bottom: 0 !important;
+    font-size: 22px !important;
+  }
+  
+  /* Cửa sổ phụ (Camera của mình) nhỏ lại */
+  #own-feed {
+    width: 100px;
+    right: 15px;
+    top: 15px;
+  }
+  
+  /* Cửa sổ Chat/Participants hiển thị to hơn trên Mobile */
+  .main-video-page .chat-window,
+  .main-video-page .participants-window {
+    width: calc(100vw - 30px);
+    right: -100vw;
+  }
+  
+  .main-video-page .chat-window.show,
+  .main-video-page .participants-window.show {
+    right: 15px;
+  }
+}

@@ -21,6 +21,7 @@ const cert = fs.readFileSync('./certs/127.0.0.1.crt');
 const expressServer = https.createServer({key, cert}, app); 
 const io = socketio(expressServer,{
     cors: [
+        `https://${serverIP}:5069`,
         `https://${serverIP}:3000`,
         `https://${serverIP}:3001`,
         `https://${serverIP}:3002`,
