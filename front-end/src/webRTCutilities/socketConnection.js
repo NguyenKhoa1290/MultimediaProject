@@ -7,7 +7,7 @@ const socketConnection = (jwt)=>{
         //if so, then just return it so whoever needs it, can use it
         return socket;
     }else{
-        socket = io.connect(`https://${process.env.REACT_APP_SERVER_IP}:9000`,{
+        socket = io.connect(`${process.env.REACT_APP_BACKEND_URL}`,{
             auth: {
                 jwt
             }

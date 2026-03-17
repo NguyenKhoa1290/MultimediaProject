@@ -20,7 +20,7 @@ const UserDashboard = () => {
     const myPhone = localStorage.getItem('username'); // username is phone
     const myFullName = localStorage.getItem('fullName');
     const [myAvatar, setMyAvatar] = useState(localStorage.getItem('avatar')); // Thêm state cho Avatar
-    const serverUrl = `https://${process.env.REACT_APP_SERVER_IP}:9000`;
+    const serverUrl = `${process.env.REACT_APP_BACKEND_URL}`;
     const socketRef = useRef(null);
 
     useEffect(() => {

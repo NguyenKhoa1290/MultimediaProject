@@ -1,0 +1,12 @@
+{
+  "name": "telelegal-turn-server",
+  "version": "1.0.0",
+  "description": "Self-hosted STUN/TURN server for WebRTC",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "node-turn": "^0.0.6"
+  }
+}

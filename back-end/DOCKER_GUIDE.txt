@@ -1,0 +1,28 @@
+==========================================================
+HƯỚNG DẪN ĐÓNG GÓI VÀ DI CHUYỂN DOCKER BACK-END
+==========================================================
+
+1. ĐÓNG GÓI (BUILD IMAGE):
+(Chạy lệnh này tại thư mục back-end)
+docker build -t telelegal-backend .
+
+2. CHẠY THỬ (RUN CONTAINER):
+(Ánh xạ cổng 9000 và chạy ngầm)
+docker run -d -p 9000:9000 --name telelegal-server telelegal-backend
+
+3. TRÍCH XUẤT THÀNH FILE (SAVE TO TAR):
+(Dành cho Windows - Tạo ra file để copy sang máy khác)
+docker save -o telelegal-backend.tar telelegal-backend
+
+4. NẠP IMAGE Ở MÁY MỚI (LOAD FROM TAR):
+(Copy file .tar sang máy mới rồi chạy lệnh này)
+docker load -i telelegal-backend.tar
+
+5. LỆNH CHẠY KÈM CLOUDFLARE TUNNEL (DOCKER):
+(Cho phép 2 container Docker thấy nhau qua mạng host)
+docker run --net=host cloudflare/cloudflared:latest tunnel --no-autoupdate run --token <TOKEN_CỦA_BẠN>
+
+LƯU Ý: 
+- Trước khi chạy Docker (Bước 2), hãy nhớ tắt server Node.js đang chạy ngoài máy thật (Ctrl+C).
+- File database.sqlite nên được copy kèm nếu bạn muốn giữ dữ liệu người dùng cũ.
+==========================================================

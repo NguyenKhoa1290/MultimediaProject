@@ -50,13 +50,13 @@ const ActionButtons = ({openCloseChat,smallFeedEl, largeFeedEl, toggleParticipan
                 <i className="fa fa-caret-up choose-video"></i>
                 <div className="button participants" onClick={toggleParticipants}>
                     <i className="fa fa-users"></i>
-                    <div className="btn-text">Participants</div>
+                    <div className="btn-text">Người tham gia</div>
                 </div>
             </div>
             <div className="button-no-caret d-inline-block">
                 <div className="button participants">
                     <i className="fa fa-comment" onClick={openCloseChat}></i>
-                    <div className="btn-text" onClick={openCloseChat}>Chat</div>
+                    <div className="btn-text" onClick={openCloseChat}>Nhắn tin</div>
                 </div>
             </div>
             <ScreenShareButton smallFeedEl={smallFeedEl} />

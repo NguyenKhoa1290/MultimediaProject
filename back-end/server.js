@@ -25,6 +25,7 @@ const io = socketio(expressServer,{
         `https://${serverIP}:3000`,
         `https://${serverIP}:3001`,
         `https://${serverIP}:3002`,
+        `https://cachephoarong.click`,
         'https://www.deploying-javascript.com',
     ]
 })

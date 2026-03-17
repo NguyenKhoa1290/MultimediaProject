@@ -112,7 +112,7 @@ const ProMainVideoPage = ()=>{
         const token = searchParams.get('token');
         console.log(token)
         const fetchDecodedToken = async()=>{
-            const resp = await axios.post(`https://${process.env.REACT_APP_SERVER_IP}:9000/validate-link`,{token});
+            const resp = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/validate-link`,{token});
             console.log(resp.data);
             setApptInfo(resp.data)
         }

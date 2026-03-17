@@ -12,7 +12,7 @@ const Register = () => {
     const handleRegister = async (e) => {
         e.preventDefault();
         try {
-            const resp = await axios.post(`https://${process.env.REACT_APP_SERVER_IP}:9000/register`, { 
+            const resp = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/register`, { 
                 phone, 
                 fullName, 
                 password 

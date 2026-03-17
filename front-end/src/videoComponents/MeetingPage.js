@@ -74,7 +74,7 @@ const MeetingPage = () => {
         }
 
         const fetchUsers = async () => {
-            const resp = await axios.get(`https://${process.env.REACT_APP_SERVER_IP}:9000/friends/${myUsername}`);
+            const resp = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/friends/${myUsername}`);
             setUsers(resp.data);
         };
         fetchUsers();
@@ -176,7 +176,11 @@ const MeetingPage = () => {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ 
                     video: { width: 1280, height: 720 }, 
-                    audio: true 
+                    audio: {
+                        echoCancellation: true, // Khử tiếng vang
+                        noiseSuppression: true, // Giảm tiếng ồn
+                        autoGainControl: true   // Tự động điều chỉnh âm lượng
+                    } 
                 });
                 
                 // Mặc định tắt để chờ người dùng bấm nút, nhưng luồng vẫn được kết nối
@@ -293,13 +297,14 @@ const MeetingPage = () => {
         alert(`Đã gửi lời mời tới ${toUsername}`);
     };
 
-    const serverUrl = `https://${process.env.REACT_APP_SERVER_IP}:9000`;
+    const serverUrl = `${process.env.REACT_APP_BACKEND_URL}`;
 
     return (
         <div className="main-video-page">
             <div className="video-chat-wrapper">
                 <video id="large-feed" ref={largeFeedEl} autoPlay playsInline></video>
-                <video id="own-feed" ref={smallFeedEl} autoPlay playsInline></video>
+                {/* own-feed PHẢI có muted để không bị vọng tiếng của chính mình */}
+                <video id="own-feed" ref={smallFeedEl} autoPlay playsInline muted></video>
                 
                 <div className={`participants-window ${showParticipants ? 'show' : ''}`}>
                     <h4>Người tham gia</h4>

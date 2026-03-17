@@ -1,0 +1,22 @@
+==========================================================
+HƯỚNG DẪN ĐÓNG GÓI VÀ DI CHUYỂN DOCKER FRONT-END
+==========================================================
+
+1. ĐÓNG GÓI (BUILD IMAGE):
+(Chạy lệnh này tại thư mục front-end)
+docker build -t telelegal-frontend .
+
+2. CHẠY THỬ (RUN CONTAINER):
+(Ánh xạ cổng 5069 và chạy ngầm)
+docker run -d -p 5069:5069 --name telelegal-ui telelegal-frontend
+
+3. TRÍCH XUẤT THÀNH FILE (SAVE TO TAR):
+docker save -o telelegal-frontend.tar telelegal-frontend
+
+4. NẠP IMAGE Ở MÁY MỚI (LOAD FROM TAR):
+docker load -i telelegal-frontend.tar
+
+LƯU Ý: 
+- Bản Docker này chạy trên nền Nginx, rất nhẹ và ổn định (Production ready).
+- Cổng chạy mặc định là 5069.
+==========================================================

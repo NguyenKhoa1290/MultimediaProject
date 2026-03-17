@@ -11,7 +11,7 @@ const Login = () => {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const resp = await axios.post(`https://${process.env.REACT_APP_SERVER_IP}:9000/login`, { phone, password });
+            const resp = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/login`, { phone, password });
             if (resp.data.success) {
                 // Lưu token và thông tin user vào localStorage
                 localStorage.setItem('token', resp.data.token);

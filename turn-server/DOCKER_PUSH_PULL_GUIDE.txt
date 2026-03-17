@@ -1,0 +1,58 @@
+==========================================================
+HƯỚNG DẪN PUSH/PULL DOCKER IMAGE (DOCKER HUB)
+==========================================================
+
+GIẢ SỬ:
+- Username Docker Hub của bạn là: "nguyen13104"
+- Tên Image của bạn là: "my-turn-server"
+
+----------------------------------------------------------
+BƯỚC 0: ĐÓNG GÓI IMAGE (BUILD) - QUAN TRỌNG
+----------------------------------------------------------
+Bạn phải đứng tại thư mục turn-server và chạy lệnh này:
+docker build -t my-turn-server .
+
+----------------------------------------------------------
+BƯỚC 1: ĐĂNG NHẬP VÀO DOCKER HUB
+----------------------------------------------------------
+Mở terminal và gõ lệnh sau, sau đó nhập mật khẩu:
+docker login
+
+----------------------------------------------------------
+BƯỚC 2: GẮN THẺ (TAG) IMAGE ĐỂ PUSH
+----------------------------------------------------------
+Docker yêu cầu Image phải có tên theo định dạng [username]/[image-name]
+(Nếu bạn đã build image tên 'my-turn-server' trước đó):
+
+docker tag my-turn-server nguyen13104/my-turn-server:latest
+
+----------------------------------------------------------
+BƯỚC 3: ĐẨY IMAGE LÊN SERVER (PUSH)
+----------------------------------------------------------
+Lệnh này sẽ tải image của bạn từ máy cá nhân lên Docker Hub:
+
+docker push nguyen13104/my-turn-server:latest
+
+----------------------------------------------------------
+BƯỚC 4: TẢI IMAGE VỀ MÁY MỚI (PULL)
+----------------------------------------------------------
+Tại máy chủ AWS/VPS, bạn chỉ cần gõ lệnh này để tải bản mới nhất về:
+
+docker pull nguyen13104/my-turn-server:latest
+
+----------------------------------------------------------
+BƯỚC 5: CHẠY IMAGE VỪA TẢI VỀ
+----------------------------------------------------------
+docker run -d --name turn-srv --net=host --restart always nguyen13104/my-turn-server:latest
+
+----------------------------------------------------------
+MẸO NHỎ (VERSIONING):
+----------------------------------------------------------
+Thay vì dùng 'latest', bạn nên dùng số phiên bản để dễ quản lý:
+docker tag my-turn-server tranbinh/my-turn-server:v1.0
+docker push tranbinh/my-turn-server:v1.0
+
+==========================================================
+LƯU Ý: Nếu bạn dùng Private Repository, bạn phải 'docker login' ở máy mới 
+trước khi có quyền 'docker pull'.
+==========================================================
