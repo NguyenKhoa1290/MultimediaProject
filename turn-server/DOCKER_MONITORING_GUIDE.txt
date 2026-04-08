@@ -1,0 +1,67 @@
+# 🚀 HƯỚNG DẪN CẬP NHẬT TURN SERVER (TRAFFIC MONITORING)
+
+Tài liệu này hướng dẫn cách gỡ bỏ container cũ và triển khai phiên bản TURN Server mới có tích hợp Dashboard theo dõi lưu lượng thời gian thực.
+
+## Bước 1: Dọn dẹp Container và Image cũ
+Trước khi cài mới, chúng ta cần xóa sạch các phiên bản đang chạy để tránh xung đột.
+
+```bash
+# 1. Dừng container đang chạy (tên là turn-srv)
+docker stop turn-srv
+
+# 2. Xóa container cũ
+docker rm turn-srv
+
+# 3. Xóa Image cũ để đảm bảo lấy bản mới nhất
+docker rmi nguyen13104/my-turn-server:latest
+```
+
+---
+
+## Bước 2: Khởi chạy Container phiên bản mới
+Sử dụng network host để tối ưu hiệu năng truyền tải WebRTC.
+
+```bash
+# Chạy container mới với tên turn-srv
+docker run -d \
+  --name turn-srv \
+  --net=host \
+  --restart always \
+  nguyen13104/my-turn-server:latest
+```
+
+---
+
+## Bước 3: Cách theo dõi Dashboard Lưu lượng (Real-time)
+Đây là phần quan trọng nhất để bạn xem các phòng đang truyền tải bao nhiêu MB dữ liệu.
+
+```bash
+# Xem log trực tiếp của container (Tên phải khớp với --name ở trên)
+docker logs -f turn-srv
+```
+
+**Kết quả hiển thị trên màn hình sẽ như sau (Cập nhật mỗi 10 giây):**
+```text
+================================================================
+🚀 TELELEGAL TURN MONITORING DASHBOARD - 10:30:45 AM
+================================================================
+ROOM/USER                      | ACTIVE   | TRAFFIC      | STATUS
+----------------------------------------------------------------
+room-0987654321-171142         | 2        | 15.42 MB     | 🟢 LIVE
+group-15-171142987             | 4        | 120.10 MB    | 🟢 LIVE
+Personal-cachephoarong         | 0        | 5.12 MB      | ⚪ STOPPED
+================================================================
+```
+
+---
+
+## Bước 4: Giải thích các thông số trong Log
+1.  **ROOM/USER:** Tên phòng họp (được Frontend truyền sang làm Username).
+2.  **ACTIVE:** Số lượng thiết bị hiện đang gửi/nhận dữ liệu qua TURN.
+3.  **TRAFFIC:** Tổng dung lượng (Video/Audio) đã đi qua server (tính bằng MB).
+4.  **STATUS:** 
+    *   `🟢 LIVE`: Đang có kết nối hoạt động.
+    *   `⚪ STOPPED`: Không còn ai kết nối.
+
+---
+Tài liệu được cập nhật dựa trên hệ thống thực tế của bạn - 2026.

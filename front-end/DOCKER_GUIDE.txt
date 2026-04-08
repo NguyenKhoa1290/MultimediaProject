@@ -1,5 +1,5 @@
 ==========================================================
-HƯỚNG DẪN ĐÓNG GÓI VÀ DI CHUYỂN DOCKER FRONT-END
+HƯỚNG DẪN ĐÓNG GÓI VÀ DI CHUYỂN DOCKER FRONT-END (HTTPS)
 ==========================================================
 
 1. ĐÓNG GÓI (BUILD IMAGE):
@@ -10,13 +10,15 @@ docker build -t telelegal-frontend .
 (Ánh xạ cổng 5069 và chạy ngầm)
 docker run -d -p 5069:5069 --name telelegal-ui telelegal-frontend
 
-3. TRÍCH XUẤT THÀNH FILE (SAVE TO TAR):
+3. KIỂM TRA TRẠNG THÁI:
+docker ps
+# Bạn sẽ thấy cổng 5069/tcp được liệt kê.
+
+4. TRÍCH XUẤT THÀNH FILE (SAVE TO TAR):
 docker save -o telelegal-frontend.tar telelegal-frontend
 
-4. NẠP IMAGE Ở MÁY MỚI (LOAD FROM TAR):
-docker load -i telelegal-frontend.tar
-
 LƯU Ý: 
-- Bản Docker này chạy trên nền Nginx, rất nhẹ và ổn định (Production ready).
-- Cổng chạy mặc định là 5069.
+- Bản Docker này sử dụng Nginx để phục vụ file tĩnh và hỗ trợ HTTPS.
+- Cổng nội bộ của container đã được cấu hình là 5069 (qua nginx.conf).
+- Chứng chỉ SSL được lấy từ thư mục ./certs/.
 ==========================================================

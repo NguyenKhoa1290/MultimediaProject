@@ -20,7 +20,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  width: 280px; /* Chiều rộng cố định cho 3 tab */
+  width: 350px; /* Chiều rộng tăng lên 350px để chứa 4 tab */
   height: 75px;
   box-sizing: border-box;
   padding: 8px 12px 10px;

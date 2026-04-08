@@ -1,37 +1,33 @@
-# Stage 1: Build React App
-FROM node:22 AS build-stage
+# --- Stage 1: Build ---
+FROM node:20-alpine AS builder
+
 WORKDIR /app
+
+# Copy package.json và cài đặt dependencies
 COPY package*.json ./
 RUN npm install
+
+# Copy mã nguồn và build dự án
 COPY . .
-# Build ứng dụng (tạo thư mục build)
+# Biến môi trường lúc build
+ARG REACT_APP_BACKEND_URL=https://backend.cachephoarong.click
+ENV REACT_APP_BACKEND_URL=$REACT_APP_BACKEND_URL
+
 RUN npm run build
 
-# Stage 2: Chạy bằng Nginx
-FROM nginx:stable-alpine
+# --- Stage 2: Production (Dùng Nginx siêu nhẹ) ---
+FROM nginx:alpine
 
-# Tạo thư mục chứa chứng chỉ
-RUN mkdir -p /etc/nginx/certs
+# Copy file build từ stage 1 vào thư mục mặc định của Nginx
+COPY --from=builder /app/build /usr/share/nginx/html
 
-# Copy các file đã build vào thư mục phục vụ của Nginx
-COPY --from=build-stage /app/build /usr/share/nginx/html
+# Copy cấu hình Nginx tùy chỉnh (Lắng nghe cổng 5069 + SSL)
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Copy chứng chỉ SSL vào container
-COPY certs/127.0.0.1.crt /etc/nginx/certs/server.crt
-COPY certs/127.0.0.1.key /etc/nginx/certs/server.key
+# Copy chứng chỉ SSL
+COPY certs /etc/nginx/certs
 
-# Cấu hình Nginx để chạy trên cổng 5069 với HTTPS
-RUN printf "server {\n\
-    listen 5069 ssl;\n\
-    ssl_certificate /etc/nginx/certs/server.crt;\n\
-    ssl_certificate_key /etc/nginx/certs/server.key;\n\
-    location / {\n\
-        root /usr/share/nginx/html;\n\
-        index index.html index.htm;\n\
-        try_files \$uri \$uri/ /index.html;\n\
-    }\n\
-}" > /etc/nginx/conf.d/default.conf
-
+# Mở cổng 5069
 EXPOSE 5069
-CMD ["nginx", "-g", "daemon off;"]
 
+CMD ["nginx", "-g", "daemon off;"]

@@ -1,25 +1,30 @@
-import peerConfiguration from './stunServers'
+import getPeerConfiguration from './stunServers'
 
-
-const createPeerConnection = (addIce)=>{
+const createPeerConnection = (addIce, roomName)=>{
     return new Promise(async(resolve, reject)=>{
-        const peerConnection = await new RTCPeerConnection(peerConfiguration);
+        const config = getPeerConfiguration(roomName);
+        const peerConnection = await new RTCPeerConnection(config);
         const remoteStream = new MediaStream();
-        peerConnection.addEventListener('signalingstatechange',(e)=>{
-            console.log("Signaling State Change")
-            console.log(e)
-        })
+        
+        // Tự động kết nối lại khi rớt mạng
+        peerConnection.addEventListener('iceconnectionstatechange', (e) => {
+            if (peerConnection.iceConnectionState === 'failed' || peerConnection.iceConnectionState === 'disconnected') {
+                peerConnection.restartIce().catch(err => console.log(err));
+            }
+        });
+
+        // Tìm đường đi tốt nhất
         peerConnection.addEventListener('icecandidate',e=>{
-            console.log("Found ice candidate...")
             if(e.candidate){
                 addIce(e.candidate)
             }
         })
+        
+        // Hứng luồng Video/Audio truyền tới
         peerConnection.addEventListener('track',e=>{
-            console.log("Got a track from the remote!")
+            console.log("WebRTC: Received a remote track!");
             e.streams[0].getTracks().forEach(track=>{
                 remoteStream.addTrack(track,remoteStream);
-                console.log("Fingers crossed...")
             })
         })
 
@@ -28,7 +33,6 @@ const createPeerConnection = (addIce)=>{
             remoteStream,
         })
     })
-
 }
 
 export default createPeerConnection

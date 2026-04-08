@@ -5,7 +5,6 @@ const ActionButtonCaretDropDown = ({defaultValue,changeHandler,deviceList,type})
     if(type==="video"){
         const videoDeviceEl = deviceList.map(vd=><option key={vd.deviceId} value={vd.deviceId}>{vd.label}</option>)
         videoDeviceEl.unshift(<optgroup key="opt-camera" label="Thiết bị Camera" />)
-        
         const qualityEl = [
             <optgroup key="opt-res" label="Độ phân giải" />,
             <option key="res480" value="res480">480p (SD)</option>,
@@ -41,4 +40,4 @@ const ActionButtonCaretDropDown = ({defaultValue,changeHandler,deviceList,type})
     )
 }
 
-export default ActionButtonCaretDropDown
+export default ActionButtonCaretDropDown;

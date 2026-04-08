@@ -5,52 +5,51 @@ const dbPath = path.resolve(__dirname, 'database.sqlite');
 
 const db = new sqlite3.Database(dbPath, (err) => {
     if (err) {
-        console.error('Lỗi khi kết nối đến cơ sở dữ liệu SQLite:', err.message);
+        console.error('Lỗi kết nối Database:', err.message);
     } else {
-        console.log('Đã kết nối thành công đến cơ sở dữ liệu SQLite.');
+        console.log('Đã kết nối thành công tới SQLite database.');
         
-        // Khởi tạo bảng users nếu chưa có
         db.run(`CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            phone TEXT UNIQUE NOT NULL,
             fullName TEXT NOT NULL,
             password TEXT NOT NULL,
-            avatar TEXT DEFAULT NULL
+            avatar TEXT,
+            is_verified INTEGER DEFAULT 0,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )`, (err) => {
-            if (err) console.error('Lỗi khi tạo bảng users:', err.message);
+            db.all("PRAGMA table_info(users)", (err, columns) => {
+                if (err) return;
+                const hasEmail = columns.some(col => col.name === 'email');
+                if (!hasEmail) {
+                    db.run("ALTER TABLE users ADD COLUMN email TEXT", (err2) => {
+                        db.run("CREATE UNIQUE INDEX IF NOT EXISTS idx_user_email ON users(email)");
+                    });
+                }
+            });
         });
 
-        // Bảng lưu lời mời kết bạn
-        db.run(`CREATE TABLE IF NOT EXISTS friend_requests (
+        db.run(`CREATE TABLE IF NOT EXISTS email_verification (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            sender_phone TEXT NOT NULL,
-            receiver_phone TEXT NOT NULL,
-            status TEXT DEFAULT 'pending', -- 'pending', 'accepted', 'rejected'
-            UNIQUE(sender_phone, receiver_phone)
-        )`, (err) => {
-            if (err) console.error('Lỗi khi tạo bảng friend_requests:', err.message);
-        });
+            email TEXT NOT NULL,
+            otp TEXT NOT NULL,
+            expires_at DATETIME NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )`);
 
-        // Bảng lưu danh sách bạn bè (Quan hệ 2 chiều)
-        db.run(`CREATE TABLE IF NOT EXISTS friends (
+        // BẢNG LƯU LINK IPTV
+        db.run(`CREATE TABLE IF NOT EXISTS iptv_links (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_phone TEXT NOT NULL,
-            friend_phone TEXT NOT NULL,
-            UNIQUE(user_phone, friend_phone)
-        )`, (err) => {
-            if (err) console.error('Lỗi khi tạo bảng friends:', err.message);
-        });
+            url TEXT UNIQUE NOT NULL,
+            name TEXT,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )`);
 
-        // Bảng lưu lịch sử cuộc gọi
-        db.run(`CREATE TABLE IF NOT EXISTS call_history (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            caller_phone TEXT NOT NULL,
-            receiver_phone TEXT NOT NULL,
-            call_time DATETIME DEFAULT CURRENT_TIMESTAMP,
-            status TEXT DEFAULT 'completed' -- 'connected', 'missed', etc.
-        )`, (err) => {
-            if (err) console.error('Lỗi khi tạo bảng call_history:', err.message);
-        });
+        db.run(`CREATE TABLE IF NOT EXISTS friends (id INTEGER PRIMARY KEY AUTOINCREMENT, user_email TEXT NOT NULL, friend_email TEXT NOT NULL, UNIQUE(user_email, friend_email))`);
+        db.run(`CREATE TABLE IF NOT EXISTS friend_requests (id INTEGER PRIMARY KEY AUTOINCREMENT, sender_email TEXT NOT NULL, receiver_email TEXT NOT NULL, status TEXT DEFAULT 'pending', created_at DATETIME DEFAULT CURRENT_TIMESTAMP, UNIQUE(sender_email, receiver_email))`);
+        db.run(`CREATE TABLE IF NOT EXISTS groups (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, owner_email TEXT NOT NULL, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)`);
+        db.run(`CREATE TABLE IF NOT EXISTS group_members (id INTEGER PRIMARY KEY AUTOINCREMENT, group_id INTEGER NOT NULL, user_email TEXT NOT NULL, UNIQUE(group_id, user_email))`);
+        db.run(`CREATE TABLE IF NOT EXISTS group_messages (id INTEGER PRIMARY KEY AUTOINCREMENT, group_id INTEGER NOT NULL, sender_email TEXT NOT NULL, content TEXT, type TEXT DEFAULT 'text', file_url TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)`);
+        db.run(`CREATE TABLE IF NOT EXISTS group_join_requests (id INTEGER PRIMARY KEY AUTOINCREMENT, group_id INTEGER NOT NULL, user_email TEXT NOT NULL, status TEXT DEFAULT 'pending', created_at DATETIME DEFAULT CURRENT_TIMESTAMP, UNIQUE(group_id, user_email))`);
     }
 });
 

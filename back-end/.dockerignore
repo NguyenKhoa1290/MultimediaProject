@@ -3,3 +3,4 @@ npm-debug.log
 database.sqlite
 public/avatars/*
 !public/avatars/.gitkeep
+ 

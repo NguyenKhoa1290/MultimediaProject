@@ -1,58 +1,51 @@
-==========================================================
-HƯỚNG DẪN PUSH/PULL DOCKER IMAGE (DOCKER HUB)
-==========================================================
+# 🔄 QUY TRÌNH ĐỒNG BỘ TURN SERVER (LOCAL -> DOCKER HUB -> CLOUD)
 
-GIẢ SỬ:
-- Username Docker Hub của bạn là: "nguyen13104"
-- Tên Image của bạn là: "my-turn-server"
+Để các tính năng mới (như theo dõi lưu lượng theo phòng) hoạt động, bạn cần đồng bộ mã nguồn local lên Image trên Cloud.
 
-----------------------------------------------------------
-BƯỚC 0: ĐÓNG GÓI IMAGE (BUILD) - QUAN TRỌNG
-----------------------------------------------------------
-Bạn phải đứng tại thư mục turn-server và chạy lệnh này:
-docker build -t my-turn-server .
+## Bước 1: Build và Push từ máy LOCAL (Nơi bạn sửa code)
+Mở Terminal tại thư mục 'turn-server' trên máy tính của bạn và chạy:
 
-----------------------------------------------------------
-BƯỚC 1: ĐĂNG NHẬP VÀO DOCKER HUB
-----------------------------------------------------------
-Mở terminal và gõ lệnh sau, sau đó nhập mật khẩu:
+```bash
+# 1. Login vào Docker Hub (Nếu chưa login)
 docker login
 
-----------------------------------------------------------
-BƯỚC 2: GẮN THẺ (TAG) IMAGE ĐỂ PUSH
-----------------------------------------------------------
-Docker yêu cầu Image phải có tên theo định dạng [username]/[image-name]
-(Nếu bạn đã build image tên 'my-turn-server' trước đó):
+# 2. Build lại image mới với tag latest
+docker build -t nguyen13104/my-turn-server:latest .
 
-docker tag my-turn-server nguyen13104/my-turn-server:latest
-
-----------------------------------------------------------
-BƯỚC 3: ĐẨY IMAGE LÊN SERVER (PUSH)
-----------------------------------------------------------
-Lệnh này sẽ tải image của bạn từ máy cá nhân lên Docker Hub:
-
+# 3. Đẩy (Push) bản mới lên Docker Hub
 docker push nguyen13104/my-turn-server:latest
+```
 
-----------------------------------------------------------
-BƯỚC 4: TẢI IMAGE VỀ MÁY MỚI (PULL)
-----------------------------------------------------------
-Tại máy chủ AWS/VPS, bạn chỉ cần gõ lệnh này để tải bản mới nhất về:
+---
 
-docker pull nguyen13104/my-turn-server:latest
+## Bước 2: Cập nhật trên máy CLOUD (Server chạy ứng dụng)
+Sau khi đã push thành công ở Bước 1, bạn quay lại máy Cloud và chạy:
 
-----------------------------------------------------------
-BƯỚC 5: CHẠY IMAGE VỪA TẢI VỀ
-----------------------------------------------------------
-docker run -d --name turn-srv --net=host --restart always nguyen13104/my-turn-server:latest
+```bash
+# 1. Dừng và xóa container cũ
+docker stop turn-srv
+docker rm turn-srv
 
-----------------------------------------------------------
-MẸO NHỎ (VERSIONING):
-----------------------------------------------------------
-Thay vì dùng 'latest', bạn nên dùng số phiên bản để dễ quản lý:
-docker tag my-turn-server tranbinh/my-turn-server:v1.0
-docker push tranbinh/my-turn-server:v1.0
+# 2. Xóa Image cũ trên Cloud để ép nó tải bản mới nhất về
+docker rmi nguyen13104/my-turn-server:latest
 
-==========================================================
-LƯU Ý: Nếu bạn dùng Private Repository, bạn phải 'docker login' ở máy mới 
-trước khi có quyền 'docker pull'.
-==========================================================
+# 3. Chạy lại container với Image mới vừa push
+docker run -d \
+  --name turn-srv \
+  --net=host \
+  --restart always \
+  nguyen13104/my-turn-server:latest
+
+# 4. Kiểm tra xem Dashboard đã hiện ra chưa
+docker logs -f turn-srv
+```
+
+---
+
+## LƯU Ý QUAN TRỌNG:
+Sau khi bạn đã thực hiện xong Bước 2 (Cloud đã chạy code mới), hãy nhắn tôi để tôi **đổi lại file stunServers.js trong Frontend** sang chế độ dùng tên phòng. 
+
+Lúc đó, Dashboard của bạn mới hiển thị chi tiết:
+- Room-ABC: 15MB
+- Room-XYZ: 20MB
+... thay vì gộp chung tất cả vào 'Personal-cachephoarong'.

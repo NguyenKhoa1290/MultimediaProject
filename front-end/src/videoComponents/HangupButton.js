@@ -28,8 +28,8 @@ const HangupButton = ({largeFeedEl, smallFeedEl, endCallProp})=>{
             }
         }
         //set both video tags to empty
-        if (smallFeedEl.current) smallFeedEl.current.srcObject = null;
-        if (largeFeedEl.current) largeFeedEl.current.srcObject = null;
+        if (smallFeedEl && smallFeedEl.current) smallFeedEl.current.srcObject = null;
+        if (largeFeedEl && largeFeedEl.current) largeFeedEl.current.srcObject = null;
 
         alert("Cuộc gọi kết thúc");
         
