@@ -14,8 +14,8 @@ const getPeerConfiguration = (roomName = "default") => {
             },
             {
                 urls: [
-                    "turn:103.166.182.59:3478",
-                    "turn:103.166.182.59:3478?transport=tcp"
+                    "turn:213.35.102.149:3478",
+                    "turn:213.35.102.149:3478?transport=tcp"
                 ],
                 username: "cachephoarong",
                 credential: "matkhau123"
