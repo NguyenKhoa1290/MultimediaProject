@@ -211,7 +211,9 @@
     right: 20px !important;
 }
 
-.settings-card, .modal-content, .card.bg-secondary {
+.main-video-page .settings-card, 
+.main-video-page .modal-content, 
+.main-video-page .card.bg-secondary {
     background: rgba(35, 35, 35, 0.75) !important;
     backdrop-filter: blur(20px) saturate(180%) !important;
     border: 1px solid rgba(255, 255, 255, 0.15) !important;
@@ -220,7 +222,7 @@
     color: white !important;
 }
 
-.options-menu {
+.main-video-page .options-menu {
     background: rgba(20, 20, 20, 0.8) !important;
     backdrop-filter: blur(20px) !important;
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
@@ -228,7 +230,8 @@
     box-shadow: 0 4px 20px rgba(0,0,0,0.4) !important;
 }
 
-.device-item, .list-group-item {
+.main-video-page .device-item, 
+.main-video-page .list-group-item {
     background: rgba(255, 255, 255, 0.05) !important;
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
     border-radius: 12px !important;
@@ -236,12 +239,13 @@
     transition: all 0.2s ease !important;
 }
 
-.device-item:hover {
+.main-video-page .device-item:hover {
     background: rgba(255, 255, 255, 0.12) !important;
     transform: translateY(-2px);
 }
 
-.form-control, .form-select {
+.main-video-page .form-control, 
+.main-video-page .form-select {
     background: rgba(0, 0, 0, 0.3) !important;
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
     color: white !important;

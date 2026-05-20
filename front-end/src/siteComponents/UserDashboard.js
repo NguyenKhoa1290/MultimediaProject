@@ -265,7 +265,7 @@ const UserDashboard = () => {
             setActiveMenuId(null);
             setHoveredMessageId(null);
             setInviteLink('');
-            if (String(detailResp.data.group.owner_phone) === String(myPhone)) {
+            if (String(detailResp.data.group.owner_email) === String(myPhone)) {
                 const jrResp = await axios.get(`${serverUrl}/groups/${groupId}/join-requests`);
                 setJoinRequests(jrResp.data);
             }
@@ -555,7 +555,7 @@ const UserDashboard = () => {
                                 </div>
                                 <div className="d-flex gap-2">
                                     <button className="btn btn-sm btn-light border" data-bs-toggle="modal" data-bs-target="#membersModal"><i className="fa fa-users text-primary"></i> Xem</button>
-                                    {String(selectedGroup.group.owner_phone) === String(myPhone) && (
+                                    {String(selectedGroup.group.owner_email) === String(myPhone) && (
                                         <>
                                             <button className="btn btn-sm btn-outline-info" title="Duyệt thành viên" data-bs-toggle="modal" data-bs-target="#requestsModal">
                                                 <i className="fa fa-user-clock"></i> {joinRequests.length > 0 && <span className="badge bg-danger ms-1">{joinRequests.length}</span>}
@@ -587,8 +587,8 @@ const UserDashboard = () => {
                                     <div className="modal-body p-0"><ul className="list-group list-group-flush">
                                         {selectedGroup.members.map(m => (
                                             <li key={m.username} className="list-group-item d-flex justify-content-between align-items-center py-3">
-                                                <div className="d-flex align-items-center"><AvatarDisplay src={m.avatar} alt={m.fullName} /><div><div className="fw-bold">{m.fullName} {String(m.username) === String(selectedGroup.group.owner_phone) && <span className="badge bg-warning text-dark ms-1">Admin 👑</span>}</div><small className="text-muted">{m.username}</small></div></div>
-                                                {String(selectedGroup.group.owner_phone) === String(myPhone) && String(m.username) !== String(myPhone) && <button className="btn btn-outline-danger btn-sm" onClick={() => removeFromGroup(m.username)}><i className="fa fa-user-times"></i> Đuổi</button>}
+                                                <div className="d-flex align-items-center"><AvatarDisplay src={m.avatar} alt={m.fullName} /><div><div className="fw-bold">{m.fullName} {String(m.username) === String(selectedGroup.group.owner_email) && <span className="badge bg-warning text-dark ms-1">Admin 👑</span>}</div><small className="text-muted">{m.username}</small></div></div>
+                                                {String(selectedGroup.group.owner_email) === String(myPhone) && String(m.username) !== String(myPhone) && <button className="btn btn-outline-danger btn-sm" onClick={() => removeFromGroup(m.username)}><i className="fa fa-user-times"></i> Đuổi</button>}
                                             </li>
                                         ))}
                                     </ul></div>
@@ -618,8 +618,8 @@ const UserDashboard = () => {
 
                             <div className="group-chat flex-grow-1 overflow-auto p-4 pb-5" style={{backgroundImage: 'url("https://www.transparenttextures.com/patterns/cubes.png")', backgroundColor: '#f8f9fa'}}>
                                 {selectedGroup.messages.map((msg, i) => {
-                                    const isMine = String(msg.sender_phone) === String(myPhone);
-                                    const isAdmin = String(selectedGroup.group.owner_phone) === String(myPhone);
+                                    const isMine = String(msg.sender_email) === String(myPhone);
+                                    const isAdmin = String(selectedGroup.group.owner_email) === String(myPhone);
                                     const canInteract = isMine || isAdmin;
 
                                     return (
